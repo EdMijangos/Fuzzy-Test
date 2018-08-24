@@ -12,7 +12,10 @@ class App extends Component {
 
   render() {
 
-    const data = this.state.results;
+    let data = this.state.results;
+    //sort results by date
+    data.sort(function(a,b){return new Date(b.date).getTime() - new Date(a.date).getTime()})
+    //add results to the variable to render
     const items = data.map(item=>{
       return ( 
         <div className="card" key={item.date + item.amount}>
