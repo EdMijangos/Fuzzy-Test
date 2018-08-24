@@ -65,7 +65,6 @@ class App extends Component {
         this.searchDate(term);
       })
     })
-    
   }
 
   searchDate(term){
@@ -87,6 +86,46 @@ class App extends Component {
     //adding new filtered data to the results state
     this.setState({results: this.state.results.concat(preResults)})
   }
+
+  //attempt at making a fuzzy search algorithm 
+  //does not work
+  fuzzyAlg(term, transaction){
+    //split the terms to make a digit by digit comparison
+    let termArr = term.split('');
+    let transArr = transaction.toString().split('');
+    let matches = 0;
+    let matchedItems = [];
+    //check how many elements in the search query are included in the potential result
+    termArr.forEach(element => {
+      if (transArr.includes(element)) {
+        matchedItems.push(element);
+        matches++
+      };
+    });
+    //if at least 70% of the searched elements are a match, the result is relevant
+    let relevance = function () {
+      if ((matches/termArr.length * 100) >= 70) return true;
+      else return false;
+    }
+    //the matched elements cannot be too far away from each other, otherwise the result is not relevant
+    let distance = function () {
+      if (matchedItems.length > 1){
+        matchedItems.forEach(elem =>{
+          for(var i = 1; i < matchedItems.length; i++){
+            if (transArr.indexOf(elem) - transArr.indexOf(matchedItems[i]) <= 2 
+            && transArr.indexOf(elem) - transArr.indexOf(matchedItems[i]) >= -2)
+            return true;
+            else return false;
+          }
+        })
+      } else return true;
+    }
+    //if the result is relevant, return it
+    if (relevance && distance) return true;
+    else return false
+  }
 }
 
 export default App;
+
+
